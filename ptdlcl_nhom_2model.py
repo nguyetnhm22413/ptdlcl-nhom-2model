@@ -61,17 +61,13 @@ else:
 
     # Chuẩn hóa dữ liệu phân loại
     try:
-        numerical_data = input_data_classification.select_dtypes(include=['number'])
-        if numerical_data.empty:
-            st.error("Không có cột số trong dữ liệu để chuẩn hóa!")
-        else:
-            input_data_classification_scaled = scaler.transform(numerical_data)
-            st.write("Dữ liệu sau khi chuẩn hóa:", input_data_classification_scaled)
+        input_data_classification_scaled = scaler.transform(input_data_classification.select_dtypes(include=['number']))
+        st.write("Dữ liệu sau khi chuẩn hóa:", input_data_classification_scaled)
 
-            # Dự đoán phân loại (rủi ro giao hàng trễ)
-            if st.button("Dự đoán Rủi ro Giao hàng Trễ"):
-                prediction_classification = best_model.predict(input_data_classification_scaled)[0]
-                st.write("Dự đoán Rủi ro Giao hàng Trễ:", "Có" if prediction_classification == 1 else "Không")
+        # Dự đoán phân loại (rủi ro giao hàng trễ)
+        if st.button("Dự đoán Rủi ro Giao hàng Trễ"):
+            prediction_classification = best_model.predict(input_data_classification_scaled)[0]
+            st.write("Dự đoán Rủi ro Giao hàng Trễ:", "Có" if prediction_classification == 1 else "Không")
     except Exception as e:
         st.error(f"Đã xảy ra lỗi khi chuẩn hóa dữ liệu: {str(e)}")
 
@@ -98,16 +94,12 @@ else:
 
     # Chuẩn hóa dữ liệu hồi quy
     try:
-        numerical_data_regression = input_data_regression.select_dtypes(include=['number'])
-        if numerical_data_regression.empty:
-            st.error("Không có cột số trong dữ liệu để chuẩn hóa!")
-        else:
-            input_data_regression_scaled = scaler.transform(numerical_data_regression)
-            st.write("Dữ liệu sau khi chuẩn hóa:", input_data_regression_scaled)
+        input_data_regression_scaled = scaler.transform(input_data_regression.select_dtypes(include=['number']))
+        st.write("Dữ liệu sau khi chuẩn hóa:", input_data_regression_scaled)
 
-            # Dự đoán hồi quy (doanh số khách hàng)
-            if st.button("Dự đoán Doanh số Khách hàng"):
-                prediction_regression = best_model2.predict(input_data_regression_scaled)[0]
-                st.write("Dự đoán Doanh số Khách hàng:", prediction_regression)
+        # Dự đoán hồi quy (doanh số khách hàng)
+        if st.button("Dự đoán Doanh số Khách hàng"):
+            prediction_regression = best_model2.predict(input_data_regression_scaled)[0]
+            st.write("Dự đoán Doanh số Khách hàng:", prediction_regression)
     except Exception as e:
         st.error(f"Đã xảy ra lỗi khi chuẩn hóa dữ liệu hồi quy: {str(e)}")
