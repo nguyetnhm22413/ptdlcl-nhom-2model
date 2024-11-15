@@ -1,15 +1,19 @@
-# -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
-import joblib
+import pickle
 from sklearn.preprocessing import StandardScaler
 
-# Load the saved models using joblib
-best_model = joblib.load('best_model.joblib')
-best_model2 = joblib.load('best_model2.joblib')
-scaler = joblib.load('scaler.joblib')
+# Tải mô hình từ tệp .pkl
+with open('best_model.pkl', 'rb') as f:
+    best_model = pickle.load(f)
 
-# Title and description
+with open('best_model2.pkl', 'rb') as f:
+    best_model2 = pickle.load(f)
+
+with open('scaler.pkl', 'rb') as f:
+    scaler = pickle.load(f)
+
+# Tiêu đề và mô tả
 st.title("Dự báo Rủi ro Giao hàng Trễ và Doanh số Khách hàng")
 
 # Nhập dữ liệu đầu vào cho cả hai dự đoán
@@ -20,7 +24,7 @@ order_item_quantity = st.number_input("Order Item Quantity")
 latitude = st.number_input("Latitude")
 longitude = st.number_input("Longitude")
 
-# Input data frame for classification
+# Input data frame cho mô hình phân loại
 input_data_classification = pd.DataFrame({
     'Days for shipment (scheduled)': [days_for_shipment_scheduled],
     'Order Item Product Price': [order_item_product_price],
@@ -29,10 +33,10 @@ input_data_classification = pd.DataFrame({
     'Longitude': [longitude]
 })
 
-# Standardize data for classification if needed
+# Tiến hành chuẩn hóa dữ liệu cho phân loại
 input_data_classification_scaled = scaler.transform(input_data_classification)
 
-# Predict with classification model
+# Dự đoán với mô hình phân loại
 if st.button("Dự đoán Rủi ro Giao hàng Trễ"):
     prediction_classification = best_model.predict(input_data_classification_scaled)[0]
     st.write("Dự đoán Rủi ro Giao hàng Trễ:", "Có" if prediction_classification == 1 else "Không")
@@ -48,7 +52,7 @@ product_price = st.number_input("Product Price")
 order_region = st.text_input("Order Region")
 market = st.text_input("Market")
 
-# Input data frame for regression
+# Input data frame cho mô hình hồi quy
 input_data_regression = pd.DataFrame({
     'Type': ['DEBIT'],
     'Days for shipment (scheduled)': [days_for_shipment_scheduled],
@@ -72,10 +76,10 @@ input_data_regression = pd.DataFrame({
     'Market': [market]
 })
 
-# Standardize the input data for regression
+# Chuẩn hóa dữ liệu cho hồi quy
 input_data_regression_scaled = scaler.transform(input_data_regression.select_dtypes(include=['number']))
 
-# Predict with regression model
+# Dự đoán với mô hình hồi quy
 if st.button("Dự đoán Doanh số Khách hàng"):
     prediction_regression = best_model2.predict(input_data_regression_scaled)[0]
     st.write("Dự đoán Doanh số Khách hàng:", prediction_regression)
