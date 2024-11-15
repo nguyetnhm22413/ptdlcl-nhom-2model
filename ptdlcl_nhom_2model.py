@@ -13,18 +13,6 @@ with open('best_model2.pkl', 'rb') as f:
 with open('scaler.pkl', 'rb') as f:
     scaler = pickle.load(f)
 
-import os
-import pickle
-import streamlit as st
-
-# Kiểm tra nếu tệp mô hình tồn tại
-if os.path.exists('best_model.pkl'):
-    with open('best_model.pkl', 'rb') as f:
-        best_model = pickle.load(f)
-else:
-    st.error("Tệp mô hình 'best_model.pkl' không tồn tại hoặc không thể truy cập!")
-
-
 # Tiêu đề và mô tả
 st.title("Dự báo Rủi ro Giao hàng Trễ và Doanh số Khách hàng")
 
