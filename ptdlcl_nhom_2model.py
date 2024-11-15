@@ -43,20 +43,16 @@ st.header("Dự đoán Rủi ro Giao hàng Trễ")
 days_for_shipment_scheduled = st.number_input("Days for shipment (scheduled)")
 order_item_product_price = st.number_input("Order Item Product Price")
 order_item_quantity = st.number_input("Order Item Quantity")
-latitude = st.number_input("Latitude")
-longitude = st.number_input("Longitude")
 
 # Input data frame cho mô hình phân loại
 input_data_classification = pd.DataFrame({
     'Days for shipment (scheduled)': [days_for_shipment_scheduled],
     'Order Item Product Price': [order_item_product_price],
-    'Order Item Quantity': [order_item_quantity],
-    'Latitude': [latitude],
-    'Longitude': [longitude]
+    'Order Item Quantity': [order_item_quantity]
 })
 
 # Tiến hành chuẩn hóa dữ liệu cho phân loại
-input_data_classification_scaled = scaler.transform(input_data_classification)
+input_data_classification_scaled = scaler.transform(input_data_classification.select_dtypes(include=['number']))
 
 # Dự đoán với mô hình phân loại
 if st.button("Dự đoán Rủi ro Giao hàng Trễ"):
@@ -85,8 +81,6 @@ input_data_regression = pd.DataFrame({
     'Customer Country': [customer_country],
     'Customer Segment': [customer_segment],
     'Customer State': [customer_state],
-    'Latitude': [latitude],
-    'Longitude': [longitude],
     'Order City': ['Bikaner'],
     'Order Country': ['India'],
     'Order Item Product Price': [order_item_product_price],
