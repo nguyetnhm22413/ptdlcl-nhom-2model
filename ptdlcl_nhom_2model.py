@@ -59,7 +59,18 @@ if input_data_classification.select_dtypes(include=['number']).isnull().any().an
     st.error("Dữ liệu nhập chứa giá trị thiếu (NaN). Vui lòng nhập đầy đủ các giá trị hợp lệ.")
 else:
     # Tiến hành chuẩn hóa dữ liệu cho phân loại, chỉ chọn các cột có kiểu số
-    input_data_classification_scaled = scaler.transform(input_data_classification.select_dtypes(include=['number']))
+    numerical_data = input_data_classification.select_dtypes(include=['number'])
+    
+    # Kiểm tra lại kiểu dữ liệu của các cột số
+    st.write("Dữ liệu số trước khi chuẩn hóa:", numerical_data)
+
+    # Nếu có cột số hợp lệ, thực hiện chuẩn hóa
+    if not numerical_data.empty:
+        try:
+            input_data_classification_scaled = scaler.transform(numerical_data)
+            st.write("Dữ liệu sau khi chuẩn hóa:", input_data_classification_scaled)
+        except Exception as e:
+            st.error(f"Đã xảy ra lỗi khi chuẩn hóa dữ liệu: {str(e)}")
 
     # Dự đoán với mô hình phân loại
     if st.button("Dự đoán Rủi ro Giao hàng Trễ"):
