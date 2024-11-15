@@ -1,19 +1,13 @@
 # -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
-import pickle
+import joblib
 from sklearn.preprocessing import StandardScaler
 
-# Load the saved models
-with open('best_model.pkl', 'rb') as f:
-    best_model = pickle.load(f)
-
-with open('best_model2.pkl', 'rb') as f:
-    best_model2 = pickle.load(f)
-
-# Load the scaler for consistent scaling
-with open('scaler.pkl', 'rb') as f:
-    scaler = pickle.load(f)
+# Load the saved models using joblib
+best_model = joblib.load('best_model.joblib')
+best_model2 = joblib.load('best_model2.joblib')
+scaler = joblib.load('scaler.joblib')
 
 # Title and description
 st.title("Dự báo Rủi ro Giao hàng Trễ và Doanh số Khách hàng")
