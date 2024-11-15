@@ -4,6 +4,14 @@ import pickle
 from sklearn.preprocessing import StandardScaler
 import os
 
+# Kiểm tra tệp mô hình có tồn tại không
+model_path = 'best_model.pkl'
+if os.path.exists(model_path):
+    with open(model_path, 'rb') as f:
+        best_model = pickle.load(f)
+else:
+    st.error(f"Tệp mô hình '{model_path}' không tồn tại hoặc không thể truy cập!")
+
 # Kiểm tra nếu tệp mô hình tồn tại
 if os.path.exists('best_model.pkl'):
     with open('best_model.pkl', 'rb') as f:
