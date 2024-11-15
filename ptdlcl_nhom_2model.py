@@ -13,11 +13,11 @@ import pickle
 from sklearn.preprocessing import StandardScaler
 
 # Load the saved models
-with open('best_model_classification.pkl', 'rb') as f:
-    best_model_classification = pickle.load(f)
+with open('best_model.pkl', 'rb') as f:
+    best_model = pickle.load(f)
 
-with open('best_model_regression.pkl', 'rb') as f:
-    best_model_regression = pickle.load(f)
+with open('best_model2.pkl', 'rb') as f:
+    best_model2 = pickle.load(f)
 
 # Title and description
 st.title("Dự báo Rủi ro Giao hàng Trễ và Doanh số Khách hàng")
@@ -80,10 +80,10 @@ input_data_classification_scaled = scaler.fit_transform(input_data_classificatio
 
 # Predict with classification model
 if st.button("Dự đoán Rủi ro Giao hàng Trễ"):
-    prediction_classification = best_model_classification.predict(input_data_classification_scaled)[0]
+    prediction_classification = best_model.predict(input_data_classification_scaled)[0]
     st.write("Dự đoán Rủi ro Giao hàng Trễ:", "Yes" if prediction_classification == 1 else "No")
 
 # Predict with regression model
 if st.button("Dự đoán Doanh số Khách hàng"):
-    prediction_regression = best_model_regression.predict(input_data_regression)[0]
+    prediction_regression = best_model2.predict(input_data_regression)[0]
     st.write("Dự đoán Doanh số Khách hàng:", prediction_regression)
