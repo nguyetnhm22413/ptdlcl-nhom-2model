@@ -51,7 +51,10 @@ input_data_classification = pd.DataFrame({
     'Order Item Quantity': [order_item_quantity]
 })
 
-# Tiến hành chuẩn hóa dữ liệu cho phân loại
+# Kiểm tra kiểu dữ liệu của các cột trong dữ liệu
+st.write("Kiểu dữ liệu của các cột trong dữ liệu nhập:", input_data_classification.dtypes)
+
+# Tiến hành chuẩn hóa dữ liệu cho phân loại, chỉ chọn các cột có kiểu số
 input_data_classification_scaled = scaler.transform(input_data_classification.select_dtypes(include=['number']))
 
 # Dự đoán với mô hình phân loại
@@ -92,7 +95,10 @@ input_data_regression = pd.DataFrame({
     'Market': [market]
 })
 
-# Chuẩn hóa dữ liệu cho hồi quy
+# Kiểm tra kiểu dữ liệu của các cột trong dữ liệu hồi quy
+st.write("Kiểu dữ liệu của các cột trong dữ liệu hồi quy:", input_data_regression.dtypes)
+
+# Chuẩn hóa dữ liệu cho hồi quy, chỉ chọn các cột có kiểu số
 input_data_regression_scaled = scaler.transform(input_data_regression.select_dtypes(include=['number']))
 
 # Dự đoán với mô hình hồi quy
