@@ -11,21 +11,19 @@ scaler_path = 'scaler.pkl'
 
 # Kiểm tra và tải mô hình nếu tệp tồn tại
 try:
-    # Tải mô hình phân loại
+    # Kiểm tra xem mô hình và scaler có tồn tại không
     if os.path.exists(model_path1):
         with open(model_path1, 'rb') as f:
             best_model = pickle.load(f)
     else:
         st.error(f"Tệp mô hình '{model_path1}' không tồn tại hoặc không thể truy cập!")
 
-    # Tải mô hình hồi quy
     if os.path.exists(model_path2):
         with open(model_path2, 'rb') as f:
             best_model2 = pickle.load(f)
     else:
         st.error(f"Tệp mô hình '{model_path2}' không tồn tại hoặc không thể truy cập!")
 
-    # Tải scaler
     if os.path.exists(scaler_path):
         with open(scaler_path, 'rb') as f:
             scaler = pickle.load(f)
