@@ -2,7 +2,22 @@ import streamlit as st
 import pandas as pd
 import pickle
 from sklearn.preprocessing import StandardScaler
+import os
 
+# Kiểm tra nếu tệp mô hình tồn tại
+if os.path.exists('best_model.pkl'):
+    with open('best_model.pkl', 'rb') as f:
+        best_model = pickle.load(f)
+else:
+    st.error("Tệp mô hình 'best_model.pkl' không tồn tại hoặc không thể truy cập!")
+
+# Kiểm tra nếu tệp mô hình tồn tại
+if os.path.exists('best_model2.pkl'):
+    with open('best_model2.pkl', 'rb') as f:
+        best_model2 = pickle.load(f)
+else:
+    st.error("Tệp mô hình 'best_model2.pkl' không tồn tại hoặc không thể truy cập!")
+    
 # Tải mô hình từ tệp .pkl
 with open('best_model.pkl', 'rb') as f:
     best_model = pickle.load(f)
