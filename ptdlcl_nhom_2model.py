@@ -1,105 +1,107 @@
-import os
-import pickle
 import streamlit as st
 import pandas as pd
+import pickle
+from sklearn.preprocessing import StandardScaler
+import os
 
-# Đường dẫn tới các tệp mô hình và scaler
+# Đường dẫn tới các tệp mô hình
 model_path1 = 'best_model.pkl'
 model_path2 = 'best_model2.pkl'
 scaler_path = 'scaler.pkl'
 
-# Khởi tạo các đối tượng mô hình và scaler
-best_model = None
-best_model2 = None
-scaler = None
+# Kiểm tra và tải mô hình nếu tệp tồn tại
+try:
+    # Tải mô hình phân loại
+    if os.path.exists(model_path1):
+        with open(model_path1, 'rb') as f:
+            best_model = pickle.load(f)
+    else:
+        st.error(f"Tệp mô hình '{model_path1}' không tồn tại hoặc không thể truy cập!")
 
-# Hàm tải mô hình và scaler
-def load_model_and_scaler():
-    global best_model, best_model2, scaler
-    try:
-        if os.path.exists(model_path1):
-            with open(model_path1, 'rb') as f:
-                best_model = pickle.load(f)
-        else:
-            st.error(f"Tệp mô hình '{model_path1}' không tồn tại hoặc không thể truy cập!")
-        
-        if os.path.exists(model_path2):
-            with open(model_path2, 'rb') as f:
-                best_model2 = pickle.load(f)
-        else:
-            st.error(f"Tệp mô hình '{model_path2}' không tồn tại hoặc không thể truy cập!")
-        
-        if os.path.exists(scaler_path):
-            with open(scaler_path, 'rb') as f:
-                scaler = pickle.load(f)
-        else:
-            st.error(f"Tệp scaler '{scaler_path}' không tồn tại hoặc không thể truy cập!")
-    
-    except Exception as e:
-        st.error(f"Đã xảy ra lỗi khi tải mô hình hoặc scaler: {str(e)}")
+    # Tải mô hình hồi quy
+    if os.path.exists(model_path2):
+        with open(model_path2, 'rb') as f:
+            best_model2 = pickle.load(f)
+    else:
+        st.error(f"Tệp mô hình '{model_path2}' không tồn tại hoặc không thể truy cập!")
 
-# Gọi hàm tải mô hình và scaler
-load_model_and_scaler()
+    # Tải scaler
+    if os.path.exists(scaler_path):
+        with open(scaler_path, 'rb') as f:
+            scaler = pickle.load(f)
+    else:
+        st.error(f"Tệp scaler '{scaler_path}' không tồn tại hoặc không thể truy cập!")
 
-# Kiểm tra xem mô hình và scaler đã được tải thành công chưa
-if best_model is None or best_model2 is None or scaler is None:
-    st.error("Không thể tải mô hình hoặc scaler. Vui lòng kiểm tra lại các tệp.")
-else:
-    # Phần còn lại của mã (dự đoán, xử lý dữ liệu, v.v.)
-    st.title("Dự báo Rủi ro Giao hàng Trễ và Doanh số Khách hàng")
+except Exception as e:
+    st.error(f"Đã xảy ra lỗi khi tải mô hình hoặc scaler: {str(e)}")
 
-    # Nhập dữ liệu cho mô hình phân loại
-    days_for_shipment_scheduled = st.number_input("Days for shipment (scheduled)", min_value=0, step=1)
-    order_item_product_price = st.number_input("Order Item Product Price", min_value=0.0, step=0.01)
-    order_item_quantity = st.number_input("Order Item Quantity", min_value=0, step=1)
+# Tiêu đề và mô tả
+st.title("Dự báo Rủi ro Giao hàng Trễ và Doanh số Khách hàng")
 
-    input_data_classification = pd.DataFrame({
-        'Days for shipment (scheduled)': [days_for_shipment_scheduled],
-        'Order Item Product Price': [order_item_product_price],
-        'Order Item Quantity': [order_item_quantity]
-    })
+# Nhập dữ liệu đầu vào cho cả hai dự đoán
+st.header("Dự đoán Rủi ro Giao hàng Trễ")
+days_for_shipment_scheduled = st.number_input("Days for shipment (scheduled)")
+order_item_product_price = st.number_input("Order Item Product Price")
+order_item_quantity = st.number_input("Order Item Quantity")
 
-    # Chuẩn hóa dữ liệu phân loại
-    try:
-        input_data_classification_scaled = scaler.transform(input_data_classification.select_dtypes(include=['number']))
-        st.write("Dữ liệu sau khi chuẩn hóa:", input_data_classification_scaled)
+# Input data frame cho mô hình phân loại
+input_data_classification = pd.DataFrame({
+    'Days for shipment (scheduled)': [days_for_shipment_scheduled],
+    'Order Item Product Price': [order_item_product_price],
+    'Order Item Quantity': [order_item_quantity]
+})
 
-        # Dự đoán phân loại (rủi ro giao hàng trễ)
-        if st.button("Dự đoán Rủi ro Giao hàng Trễ"):
-            prediction_classification = best_model.predict(input_data_classification_scaled)[0]
-            st.write("Dự đoán Rủi ro Giao hàng Trễ:", "Có" if prediction_classification == 1 else "Không")
-    except Exception as e:
-        st.error(f"Đã xảy ra lỗi khi chuẩn hóa dữ liệu: {str(e)}")
+# Kiểm tra kiểu dữ liệu của các cột trong dữ liệu
+st.write("Kiểu dữ liệu của các cột trong dữ liệu nhập:", input_data_classification.dtypes)
 
-    # Nhập dữ liệu cho mô hình hồi quy
-    category_id = st.number_input("Category Id", min_value=0, step=1)
-    customer_city = st.text_input("Customer City")
-    customer_country = st.text_input("Customer Country")
-    customer_segment = st.text_input("Customer Segment")
-    customer_state = st.text_input("Customer State")
-    product_price = st.number_input("Product Price", min_value=0.0, step=0.01)
-    order_region = st.text_input("Order Region")
-    market = st.text_input("Market")
+# Tiến hành chuẩn hóa dữ liệu cho phân loại, chỉ chọn các cột có kiểu số
+input_data_classification_scaled = scaler.transform(input_data_classification.select_dtypes(include=['number']))
 
-    input_data_regression = pd.DataFrame({
-        'Category Id': [category_id],
-        'Customer City': [customer_city],
-        'Customer Country': [customer_country],
-        'Customer Segment': [customer_segment],
-        'Customer State': [customer_state],
-        'Product Price': [product_price],
-        'Order Region': [order_region],
-        'Market': [market]
-    })
+# Dự đoán với mô hình phân loại
+if st.button("Dự đoán Rủi ro Giao hàng Trễ"):
+    prediction_classification = best_model.predict(input_data_classification_scaled)[0]
+    st.write("Dự đoán Rủi ro Giao hàng Trễ:", "Có" if prediction_classification == 1 else "Không")
 
-    # Chuẩn hóa dữ liệu hồi quy
-    try:
-        input_data_regression_scaled = scaler.transform(input_data_regression.select_dtypes(include=['number']))
-        st.write("Dữ liệu sau khi chuẩn hóa:", input_data_regression_scaled)
+# Nhập các thông tin khác để dự đoán doanh số khách hàng
+st.header("Dự đoán Doanh số Khách hàng")
+category_id = st.number_input("Category Id")
+customer_city = st.text_input("Customer City")
+customer_country = st.text_input("Customer Country")
+customer_segment = st.text_input("Customer Segment")
+customer_state = st.text_input("Customer State")
+product_price = st.number_input("Product Price")
+order_region = st.text_input("Order Region")
+market = st.text_input("Market")
 
-        # Dự đoán hồi quy (doanh số khách hàng)
-        if st.button("Dự đoán Doanh số Khách hàng"):
-            prediction_regression = best_model2.predict(input_data_regression_scaled)[0]
-            st.write("Dự đoán Doanh số Khách hàng:", prediction_regression)
-    except Exception as e:
-        st.error(f"Đã xảy ra lỗi khi chuẩn hóa dữ liệu hồi quy: {str(e)}")
+# Input data frame cho mô hình hồi quy
+input_data_regression = pd.DataFrame({
+    'Type': ['DEBIT'],
+    'Days for shipment (scheduled)': [days_for_shipment_scheduled],
+    'Delivery Status': ['Advance shipping'],
+    'Category Id': [category_id],
+    'Category Name': ['Cleats'],
+    'Customer City': [customer_city],
+    'Customer Country': [customer_country],
+    'Customer Segment': [customer_segment],
+    'Customer State': [customer_state],
+    'Order City': ['Bikaner'],
+    'Order Country': ['India'],
+    'Order Item Product Price': [order_item_product_price],
+    'Order Item Quantity': [order_item_quantity],
+    'Order Status': ['COMPLETE'],
+    'Product Card Id': [1360],
+    'Product Price': [product_price],
+    'Order Region': [order_region],
+    'Market': [market]
+})
+
+# Kiểm tra kiểu dữ liệu của các cột trong dữ liệu hồi quy
+st.write("Kiểu dữ liệu của các cột trong dữ liệu hồi quy:", input_data_regression.dtypes)
+
+# Chuẩn hóa dữ liệu cho hồi quy, chỉ chọn các cột có kiểu số
+input_data_regression_scaled = scaler.transform(input_data_regression.select_dtypes(include=['number']))
+
+# Dự đoán với mô hình hồi quy
+if st.button("Dự đoán Doanh số Khách hàng"):
+    prediction_regression = best_model2.predict(input_data_regression_scaled)[0]
+    st.write("Dự đoán Doanh số Khách hàng:", prediction_regression)
