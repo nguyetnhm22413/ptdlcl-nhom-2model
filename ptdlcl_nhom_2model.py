@@ -51,16 +51,20 @@ input_data_classification = pd.DataFrame({
     'Order Item Quantity': [order_item_quantity]
 })
 
-# Kiểm tra kiểu dữ liệu của các cột trong dữ liệu
+# Kiểm tra kiểu dữ liệu của các cột trong dữ liệu nhập
 st.write("Kiểu dữ liệu của các cột trong dữ liệu nhập:", input_data_classification.dtypes)
 
-# Tiến hành chuẩn hóa dữ liệu cho phân loại, chỉ chọn các cột có kiểu số
-input_data_classification_scaled = scaler.transform(input_data_classification.select_dtypes(include=['number']))
+# Kiểm tra xem dữ liệu nhập có chứa giá trị không hợp lệ hay không
+if input_data_classification.select_dtypes(include=['number']).isnull().any().any():
+    st.error("Dữ liệu nhập chứa giá trị thiếu (NaN). Vui lòng nhập đầy đủ các giá trị hợp lệ.")
+else:
+    # Tiến hành chuẩn hóa dữ liệu cho phân loại, chỉ chọn các cột có kiểu số
+    input_data_classification_scaled = scaler.transform(input_data_classification.select_dtypes(include=['number']))
 
-# Dự đoán với mô hình phân loại
-if st.button("Dự đoán Rủi ro Giao hàng Trễ"):
-    prediction_classification = best_model.predict(input_data_classification_scaled)[0]
-    st.write("Dự đoán Rủi ro Giao hàng Trễ:", "Có" if prediction_classification == 1 else "Không")
+    # Dự đoán với mô hình phân loại
+    if st.button("Dự đoán Rủi ro Giao hàng Trễ"):
+        prediction_classification = best_model.predict(input_data_classification_scaled)[0]
+        st.write("Dự đoán Rủi ro Giao hàng Trễ:", "Có" if prediction_classification == 1 else "Không")
 
 # Nhập các thông tin khác để dự đoán doanh số khách hàng
 st.header("Dự đoán Doanh số Khách hàng")
