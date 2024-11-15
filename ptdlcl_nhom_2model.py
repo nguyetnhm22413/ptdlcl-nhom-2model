@@ -4,37 +4,36 @@ import pickle
 from sklearn.preprocessing import StandardScaler
 import os
 
-# Kiểm tra tệp mô hình có tồn tại không
-model_path = 'best_model.pkl'
-if os.path.exists(model_path):
-    with open(model_path, 'rb') as f:
-        best_model = pickle.load(f)
-else:
-    st.error(f"Tệp mô hình '{model_path}' không tồn tại hoặc không thể truy cập!")
+# Đường dẫn tới các tệp mô hình
+model_path1 = 'best_model.pkl'
+model_path2 = 'best_model2.pkl'
+scaler_path = 'scaler.pkl'
 
-# Kiểm tra nếu tệp mô hình tồn tại
-if os.path.exists('best_model.pkl'):
-    with open('best_model.pkl', 'rb') as f:
-        best_model = pickle.load(f)
-else:
-    st.error("Tệp mô hình 'best_model.pkl' không tồn tại hoặc không thể truy cập!")
+# Kiểm tra và tải mô hình nếu tệp tồn tại
+try:
+    # Tải mô hình phân loại
+    if os.path.exists(model_path1):
+        with open(model_path1, 'rb') as f:
+            best_model = pickle.load(f)
+    else:
+        st.error(f"Tệp mô hình '{model_path1}' không tồn tại hoặc không thể truy cập!")
 
-# Kiểm tra nếu tệp mô hình tồn tại
-if os.path.exists('best_model2.pkl'):
-    with open('best_model2.pkl', 'rb') as f:
-        best_model2 = pickle.load(f)
-else:
-    st.error("Tệp mô hình 'best_model2.pkl' không tồn tại hoặc không thể truy cập!")
-    
-# Tải mô hình từ tệp .pkl
-with open('best_model.pkl', 'rb') as f:
-    best_model = pickle.load(f)
+    # Tải mô hình hồi quy
+    if os.path.exists(model_path2):
+        with open(model_path2, 'rb') as f:
+            best_model2 = pickle.load(f)
+    else:
+        st.error(f"Tệp mô hình '{model_path2}' không tồn tại hoặc không thể truy cập!")
 
-with open('best_model2.pkl', 'rb') as f:
-    best_model2 = pickle.load(f)
+    # Tải scaler
+    if os.path.exists(scaler_path):
+        with open(scaler_path, 'rb') as f:
+            scaler = pickle.load(f)
+    else:
+        st.error(f"Tệp scaler '{scaler_path}' không tồn tại hoặc không thể truy cập!")
 
-with open('scaler.pkl', 'rb') as f:
-    scaler = pickle.load(f)
+except Exception as e:
+    st.error(f"Đã xảy ra lỗi khi tải mô hình hoặc scaler: {str(e)}")
 
 # Tiêu đề và mô tả
 st.title("Dự báo Rủi ro Giao hàng Trễ và Doanh số Khách hàng")
