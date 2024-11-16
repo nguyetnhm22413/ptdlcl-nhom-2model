@@ -1,13 +1,11 @@
 import streamlit as st
 import pandas as pd
 import pickle
-from sklearn.preprocessing import StandardScaler
 import os
 
 # Đường dẫn tới các tệp mô hình
 model_path1 = 'best_model.pkl'
 model_path2 = 'best_model2.pkl'
-scaler_path = 'scaler.pkl'
 
 # Kiểm tra và tải mô hình nếu tệp tồn tại
 try:
@@ -25,15 +23,8 @@ try:
     else:
         st.error(f"Tệp mô hình '{model_path2}' không tồn tại hoặc không thể truy cập!")
 
-    # Tải scaler
-    if os.path.exists(scaler_path):
-        with open(scaler_path, 'rb') as f:
-            scaler = pickle.load(f)
-    else:
-        st.error(f"Tệp scaler '{scaler_path}' không tồn tại hoặc không thể truy cập!")
-
 except Exception as e:
-    st.error(f"Đã xảy ra lỗi khi tải mô hình hoặc scaler: {str(e)}")
+    st.error(f"Đã xảy ra lỗi khi tải mô hình: {str(e)}")
 
 # Tiêu đề và mô tả
 st.title("Dự báo Rủi ro Giao hàng Trễ và Doanh số Khách hàng")
@@ -58,23 +49,9 @@ st.write("Kiểu dữ liệu của các cột trong dữ liệu nhập:", input_
 if input_data_classification.select_dtypes(include=['number']).isnull().any().any():
     st.error("Dữ liệu nhập chứa giá trị thiếu (NaN). Vui lòng nhập đầy đủ các giá trị hợp lệ.")
 else:
-    # Tiến hành chuẩn hóa dữ liệu cho phân loại, chỉ chọn các cột có kiểu số
-    numerical_data = input_data_classification.select_dtypes(include=['number'])
-    
-    # Kiểm tra lại kiểu dữ liệu của các cột số
-    st.write("Dữ liệu số trước khi chuẩn hóa:", numerical_data)
-
-    # Nếu có cột số hợp lệ, thực hiện chuẩn hóa
-    if not numerical_data.empty:
-        try:
-            input_data_classification_scaled = scaler.transform(numerical_data)
-            st.write("Dữ liệu sau khi chuẩn hóa:", input_data_classification_scaled)
-        except Exception as e:
-            st.error(f"Đã xảy ra lỗi khi chuẩn hóa dữ liệu: {str(e)}")
-
     # Dự đoán với mô hình phân loại
     if st.button("Dự đoán Rủi ro Giao hàng Trễ"):
-        prediction_classification = best_model.predict(input_data_classification_scaled)[0]
+        prediction_classification = best_model.predict(input_data_classification)[0]
         st.write("Dự đoán Rủi ro Giao hàng Trễ:", "Có" if prediction_classification == 1 else "Không")
 
 # Nhập các thông tin khác để dự đoán doanh số khách hàng
@@ -113,10 +90,7 @@ input_data_regression = pd.DataFrame({
 # Kiểm tra kiểu dữ liệu của các cột trong dữ liệu hồi quy
 st.write("Kiểu dữ liệu của các cột trong dữ liệu hồi quy:", input_data_regression.dtypes)
 
-# Chuẩn hóa dữ liệu cho hồi quy, chỉ chọn các cột có kiểu số
-input_data_regression_scaled = scaler.transform(input_data_regression.select_dtypes(include=['number']))
-
 # Dự đoán với mô hình hồi quy
 if st.button("Dự đoán Doanh số Khách hàng"):
-    prediction_regression = best_model2.predict(input_data_regression_scaled)[0]
+    prediction_regression = best_model2.predict(input_data_regression.select_dtypes(include=['number']))[0]
     st.write("Dự đoán Doanh số Khách hàng:", prediction_regression)
